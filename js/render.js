@@ -21,6 +21,31 @@ export function isFinder(n, r, c) {
   return inBox(0, 0) || inBox(0, n - FINDER) || inBox(n - FINDER, 0);
 }
 
+// Alignment pattern centre rows/cols per QR version (from the spec, same table qrcode.js uses).
+const ALIGNMENT_POSITIONS = [
+  [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50],
+  [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78],
+  [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98],
+  [6, 30, 54, 78, 102], [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114], [6, 34, 62, 90, 118],
+  [6, 26, 50, 74, 98, 122], [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134],
+  [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150],
+  [6, 24, 50, 76, 102, 128, 154], [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162],
+  [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170],
+];
+
+// Centres of the small 5x5 alignment squares. Scanners lean on these, so they
+// get drawn solid like the corner eyes instead of in the dot style.
+export function alignmentCenters(n) {
+  const pos = ALIGNMENT_POSITIONS[(n - 17) / 4 - 1] || [];
+  const out = [];
+  for (const r of pos) for (const c of pos) if (!isFinder(n, r, c)) out.push([r, c]);
+  return out;
+}
+
+function inAlignment(centers, r, c) {
+  return centers.some(([ar, ac]) => Math.abs(r - ar) <= 2 && Math.abs(c - ac) <= 2);
+}
+
 // Centered square of modules to leave empty under a logo. Odd size keeps it centered.
 export function logoArea(n) {
   let size = Math.round(n * LOGO_FRACTION);
@@ -88,7 +113,7 @@ function bodyPath(matrix, style, skip, m) {
         d += `M${start + m} ${r + m}h${c - start}v1h${start - c}z`;
         continue;
       }
-      if (style === "dots") d += circle(c + m + 0.5, r + m + 0.5, 0.42);
+      if (style === "dots") d += circle(c + m + 0.5, r + m + 0.5, 0.44);
       else d += blobModule(c + m, r + m, (dr, dc) => dark(r + dr, c + dc));
       c++;
     }
@@ -113,6 +138,21 @@ function eyePaths(n, style, m) {
   return { outer, inner };
 }
 
+function alignmentPath(centers, style, m) {
+  let d = "";
+  for (const [r, c] of centers) {
+    const cx = c + m + 0.5, cy = r + m + 0.5;
+    if (style === "circle") {
+      d += circle(cx, cy, 2.5) + circle(cx, cy, 1.5) + circle(cx, cy, 0.5);
+    } else {
+      const round = style === "rounded";
+      d += roundedRect(cx - 2.5, cy - 2.5, 5, 5, round ? 1.4 : 0) + roundedRect(cx - 1.5, cy - 1.5, 3, 3, round ? 0.8 : 0);
+      d += roundedRect(cx - 0.5, cy - 0.5, 1, 1, round ? 0.3 : 0);
+    }
+  }
+  return d;
+}
+
 const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
 
 export const DEFAULT_STYLE = {
@@ -133,16 +173,17 @@ export function renderSvg(matrix, options = {}) {
   const m = QUIET_ZONE;
   const size = n + m * 2;
   const area = o.logo ? logoArea(n) : null;
-  const skip = (r, c) => isFinder(n, r, c) || inArea(area, r, c);
+  const centers = alignmentCenters(n).filter(([r, c]) => !inArea(area, r, c));
+  const skip = (r, c) => isFinder(n, r, c) || inArea(area, r, c) || inAlignment(centers, r, c);
 
-  const body = bodyPath(matrix, o.dots, skip, m);
+  const body = bodyPath(matrix, o.dots, skip, m) + alignmentPath(centers, o.eyes, m);
   const eyes = eyePaths(n, o.eyes, m);
   const eyeColor = o.eye || o.fg;
   const solidBg = o.frame || !o.transparent;
 
   let code = "";
   if (solidBg) code += `<rect width="${size}" height="${size}" fill="${esc(o.bg)}"/>`;
-  code += `<path d="${body}" fill="${esc(o.fg)}"/>`;
+  code += `<path d="${body}" fill="${esc(o.fg)}" fill-rule="evenodd"/>`;
   code += `<path d="${eyes.outer}" fill="${esc(eyeColor)}" fill-rule="evenodd"/>`;
   code += `<path d="${eyes.inner}" fill="${esc(eyeColor)}"/>`;
   if (area) {

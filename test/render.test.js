@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { encode, renderSvg, isFinder, logoArea, scanWarning, QUIET_ZONE } from "../js/render.js";
+import { encode, renderSvg, isFinder, logoArea, scanWarning, alignmentCenters, QUIET_ZONE } from "../js/render.js";
 
 const qrcode = createRequire(import.meta.url)("../vendor/qrcode.js");
 
@@ -71,4 +71,10 @@ test("scanWarning flags low contrast and inverted colors", () => {
   assert.match(scanWarning("#cccccc", "#ffffff", false), /Low contrast/);
   assert.match(scanWarning("#ffffff", "#000000", false), /Light dots/);
   assert.match(scanWarning("#000000", "#ffffff", true), /Transparent/);
+});
+
+test("alignmentCenters skips finder corners", () => {
+  assert.deepEqual(alignmentCenters(21), []);
+  assert.deepEqual(alignmentCenters(25), [[18, 18]]);
+  assert.equal(alignmentCenters(45).length, 6);
 });

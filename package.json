@@ -4,6 +4,6 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "start": "python3 -m http.server 5173"
+    "start": "python3 -m http.server 5180"
   }
 }
