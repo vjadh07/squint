@@ -222,11 +222,12 @@ function luminance(hex) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-export function scanWarning(fg, bg, transparent) {
+// Corner eyes are big and chunky, so they get away with less contrast than the dots.
+export function scanWarning(fg, bg, transparent, minRatio = 3) {
   if (transparent) return "Transparent background: make sure whatever it sits on is light.";
   const a = luminance(fg), b = luminance(bg);
   const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
-  if (ratio < 3) return "Low contrast. Some phones won't read this, try darker dots or a lighter background.";
+  if (ratio < minRatio) return "Low contrast. Some phones won't read this, try darker dots or a lighter background.";
   if (a > b) return "Light dots on a dark background. Newer phones are fine, some older scanners aren't.";
   return "";
 }

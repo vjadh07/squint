@@ -35,6 +35,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 
@@ -424,7 +425,7 @@ details p { padding: 0 22px 22px; color: var(--ink-2); max-width: 60ch; }
 }
 @media (max-width: 767px) {
   .hero { gap: 20px; padding-top: 16px; }
-  .fan { width: min(78%, 340px); }
+  .fan { width: min(60%, 260px); }
   .quick-row { border-radius: 20px; flex-direction: column; }
   .quick-row .btn { width: 100%; }
   .fields.cols { grid-template-columns: 1fr; }

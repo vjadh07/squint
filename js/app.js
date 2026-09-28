@@ -113,7 +113,7 @@ function renderStatus(code) {
   if (code.error) { text = code.error; kind = "error"; }
   else if (code.isEmpty) { text = "Fill in the details and your code shows up here."; }
   else {
-    const warning = scanWarning(s.fg, s.bg, s.transparent && !s.frame) || scanWarning(s.eye || s.fg, s.bg, false);
+    const warning = scanWarning(s.fg, s.bg, s.transparent && !s.frame) || scanWarning(s.eye || s.fg, s.bg, false, 2.2);
     if (warning) { text = warning; kind = "warn"; }
     else if (s.logo) text = "Logo on. Damage tolerance is set to Max so it still scans.";
     else text = "Looks scannable. Test it with your phone camera before printing.";
@@ -455,7 +455,7 @@ function boot() {
     $("#status").textContent = "The QR library didn't load. Refresh the page to try again.";
     return;
   }
-  $("#hero-sticker [data-qr]").dataset.empty = "Type a link to start";
+  $("#hero-sticker [data-qr]").dataset.empty = "Type a link";
   $("#studio-sticker [data-qr]").dataset.empty = "Waiting for details";
   buildSwatches();
   bindEvents();

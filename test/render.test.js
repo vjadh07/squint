@@ -78,3 +78,8 @@ test("alignmentCenters skips finder corners", () => {
   assert.deepEqual(alignmentCenters(25), [[18, 18]]);
   assert.equal(alignmentCenters(45).length, 6);
 });
+
+test("scanWarning accepts a custom ratio for chunky corner eyes", () => {
+  assert.match(scanWarning("#ff5b35", "#fff3ee", false), /Low contrast/);
+  assert.equal(scanWarning("#ff5b35", "#fff3ee", false, 2.2), "");
+});
