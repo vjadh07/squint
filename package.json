@@ -2,6 +2,13 @@
   "name": "squint",
   "private": true,
   "version": "2.0.0",
+  "description": "Free QR codes that never expire. Made in your browser and test-scanned before download.",
+  "license": "MIT",
+  "homepage": "https://vjadh07.github.io/squint/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vjadh07/squint.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite --port 5180",

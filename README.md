@@ -42,3 +42,7 @@ React + Vite + Tailwind, with motion for animation.
 Some UI pieces started from Aceternity UI, Magic UI and Motion Primitives and were adapted for this site. QR encoding is [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator).
 
 QR Code is a registered trademark of DENSO WAVE.
+
+## license
+
+MIT. Do whatever you want with it.
