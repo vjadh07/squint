@@ -4,6 +4,8 @@ Free QR codes that never expire. No account, no watermark, no trial.
 
 **Live:** https://vjadh07.github.io/squint/
 
+![Squint: QR codes that never expire](public/og.png)
+
 ## why i made this
 
 Most "free" QR sites give you a code that points at their server first, then switch it off when your trial ends. Squint makes static codes, so your link is stored in the pattern itself. Nothing in the middle can break it or track it. Everything happens in your browser, and every code gets test-scanned before you download it.
