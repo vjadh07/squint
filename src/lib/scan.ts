@@ -9,7 +9,10 @@ import { sceneToCanvas } from "./exporter";
 // ~15ms and is closer to what a real phone sees anyway.
 const SCAN_SIZE = 320;
 const CAMERA_BLUR_PX = 1.2;
-const TIMEOUT_MS = 10000;
+// Some devices starve worker threads (background QoS, battery saver). If the
+// worker doesn't answer quickly we decode in the page instead, which only takes
+// a few ms at this size, and stick with that for the rest of the visit.
+const WORKER_PATIENCE_MS = 1500;
 
 export class ScanTimeoutError extends Error {}
 
@@ -61,11 +64,14 @@ export async function testScan(scene: Scene): Promise<string | null> {
   if (!w) return decodeInPage(img);
 
   const id = ++nextId;
-  return new Promise((resolve, reject) => {
+  const copy = new Uint8ClampedArray(img.data);
+  return new Promise((resolve) => {
     const timer = setTimeout(() => {
       pending.delete(id);
-      reject(new ScanTimeoutError("Test scan took too long"));
-    }, TIMEOUT_MS);
+      worker?.terminate();
+      worker = null;
+      resolve(decodeInPage(new ImageData(copy, img.width, img.height)));
+    }, WORKER_PATIENCE_MS);
     pending.set(id, (text) => {
       clearTimeout(timer);
       resolve(text);
