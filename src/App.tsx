@@ -1,14 +1,24 @@
+import { lazy, Suspense } from "react";
 import { MotionConfig } from "motion/react";
 import { CodeProvider } from "@/hooks/code-context";
 import { useLiveCounts } from "@/hooks/use-live-counts";
 import { Nav } from "@/components/nav";
 import { Hero } from "@/components/hero";
 import { Studio } from "@/components/studio/studio";
-import { Why } from "@/components/why";
-import { Inside } from "@/components/inside";
-import { Faq } from "@/components/faq";
-import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/toast";
+
+// Below-the-fold sections load as separate chunks. The imports start right away
+// (in parallel with the first render) so nav links to #why and #faq still land.
+const whyChunk = import("@/components/why");
+const insideChunk = import("@/components/inside");
+const faqChunk = import("@/components/faq");
+const footerChunk = import("@/components/footer");
+const Why = lazy(() => whyChunk.then((m) => ({ default: m.Why })));
+const Inside = lazy(() => insideChunk.then((m) => ({ default: m.Inside })));
+const Faq = lazy(() => faqChunk.then((m) => ({ default: m.Faq })));
+const Footer = lazy(() => footerChunk.then((m) => ({ default: m.Footer })));
+
+const SectionPlaceholder = () => <div className="min-h-[60vh]" aria-hidden="true" />;
 
 export default function App() {
   useLiveCounts();
@@ -25,11 +35,15 @@ export default function App() {
         <main>
           <Hero />
           <Studio />
-          <Why />
-          <Inside />
-          <Faq />
+          <Suspense fallback={<SectionPlaceholder />}>
+            <Why />
+            <Inside />
+            <Faq />
+          </Suspense>
         </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
         <Toaster />
       </CodeProvider>
     </MotionConfig>
