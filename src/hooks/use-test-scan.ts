@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import type { Scene } from "@/lib/scene";
-import { testScan, ScanTimeoutError } from "@/lib/scan";
+import { testScan } from "@/lib/scan";
 
 export type ScanState =
   | { status: "checking" }
   | { status: "ok"; decoded: string }
   | { status: "mismatch"; decoded: string }
-  | { status: "fail" }
-  | { status: "skipped" };
+  | { status: "fail" };
 
 const DEBOUNCE_MS = 380;
 
@@ -25,8 +24,8 @@ export function useTestScan(scene: Scene, expected: string): ScanState {
           if (decoded === null) setState({ status: "fail" });
           else setState({ status: decoded === expected ? "ok" : "mismatch", decoded });
         })
-        .catch((err) => {
-          if (!cancelled) setState({ status: err instanceof ScanTimeoutError ? "skipped" : "fail" });
+        .catch(() => {
+          if (!cancelled) setState({ status: "fail" });
         });
     }, DEBOUNCE_MS);
     return () => {

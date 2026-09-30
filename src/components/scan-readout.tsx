@@ -22,8 +22,6 @@ export function ScanReadout({ code, scan, className, compact = false }: Props) {
     icon = <IconCircleCheckFilled className="size-4 shrink-0 text-amber" aria-hidden="true" />;
     tone = "text-ink";
     text = code.isEmpty ? "Demo code. Reads as this site. Type to make yours." : `Scans as ${describePayload(scan.decoded)}`;
-  } else if (scan.status === "skipped") {
-    text = "Couldn't finish the test scan on this device. Try it with your phone.";
   } else if (scan.status === "fail") {
     icon = <IconAlertTriangle className="size-4 shrink-0 text-alarm" aria-hidden="true" />;
     tone = "text-alarm";

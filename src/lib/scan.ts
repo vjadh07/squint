@@ -14,8 +14,6 @@ const CAMERA_BLUR_PX = 1.2;
 // a few ms at this size, and stick with that for the rest of the visit.
 const WORKER_PATIENCE_MS = 1500;
 
-export class ScanTimeoutError extends Error {}
-
 let worker: Worker | null | undefined;
 let nextId = 0;
 const pending = new Map<number, (text: string | null) => void>();
