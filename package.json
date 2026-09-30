@@ -1,9 +1,40 @@
 {
   "name": "squint",
   "private": true,
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --test test/*.test.js",
-    "start": "python3 -m http.server 5180"
+    "dev": "vite --port 5180",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 5181",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@fontsource-variable/doto": "^5.3.0",
+    "@fontsource-variable/funnel-display": "^5.3.0",
+    "@fontsource-variable/funnel-sans": "^5.3.0",
+    "@tabler/icons-react": "^3.48.0",
+    "clsx": "^2.1.1",
+    "jsqr": "^1.4.0",
+    "motion": "^13.4.6",
+    "qrcode-generator": "^2.0.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^4.1.11",
+    "jsdom": "^29.1.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^4.1.11"
   }
 }
